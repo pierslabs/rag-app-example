@@ -1,8 +1,13 @@
 # compiled output
-/dist
-/node_modules
+# Node.js dependencies
+node_modules/
+*/node_modules/
+**/node_modules/
+
+# Compiled output
+*/dist/
+**/dist/
 /build
-.env
 
 # Logs
 logs
