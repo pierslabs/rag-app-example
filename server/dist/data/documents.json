@@ -1,0 +1,354 @@
+{
+  "restaurant_info": {
+    "name": "Cal dimoni",
+    "description": "Restaurante gourmet especializado en cocina mediterránea y arroces tipicos, con ingredientes locales y técnicas tradicionales.",
+    "address": "Paseo Marítimo, 12, Vila-real",
+    "contact": {
+      "phone": "+34 934 56 78 90",
+      "email": "info@caldimoni.com",
+      "website": "https://caldimoni.com"
+    },
+    "capacity": 120,
+    "chef": "Jose Dimoni (1 estrella Michelin)",
+    "about": {
+      "history": {
+        "founded": 1983,
+        "anniversary": "40 años de tradición familiar",
+        "origin_story": "Fundado por la familia Navarro en Valencia, comenzamos como un pequeño puesto de paellas en la playa antes de convertirnos en referente de la cocina mediterránea."
+      },
+      "awards": [
+        {
+          "name": "10 Cucharas de Madera",
+          "description": "Premio otorgado por el Gremio de Restaurantes de Valencia a la auténtica paella valenciana",
+          "year": 2022,
+          "category": "Excelencia culinaria tradicional"
+        },
+        {
+          "name": "Mejor Arroz del Levante",
+          "description": "Reconocimiento en los Premios Gastronómicos Mediterráneos",
+          "year": 2019
+        }
+      ],
+      "event_catering": {
+        "max_capacity": 500,
+        "specialties": [
+          "Paellas gigantes (hasta 300 raciones)",
+          "Banquetes de bodas",
+          "Eventos corporativos"
+        ],
+        "locations": [
+          "Valencia y provincia",
+          "Disponibilidad para desplazamientos nacionales"
+        ],
+        "featured_events": [
+          {
+            "name": "Boda Real en el Palacio de las Artes",
+            "year": 2018,
+            "guests": 450
+          }
+        ]
+      },
+      "chef_legacy": {
+        "current_chef": "Jose Dimoni (3ª generación)",
+        "training": "Formado en el Basque Culinary Center y aprendiz de Pepe Dimoni",
+        "philosophy": "Respeto absoluto por las recetas tradicionales con técnicas contemporáneas"
+      },
+      "testimonials": [
+        {
+          "source": "Guía Repsol",
+          "quote": "La paella más auténtica de la Comunidad Valenciana. 3 Soles (2023)"
+        },
+        {
+          "source": "El País Semanal",
+          "quote": "Un viaje al corazón de la gastronomía mediterránea. Imprescindible."
+        }
+      ]
+    }
+  },
+  "menu": {
+    "categories": [
+      {
+        "name": "Entrantes",
+        "items": [
+          {
+            "id": "entr-1",
+            "name": "Tartar de Atún Rojo",
+            "description": "Atún rojo de almadraba con aguacate, salsa ponzu y chips de wonton",
+            "price": 18.50,
+            "allergens": [
+              "pescado",
+              "soja"
+            ],
+            "vegetarian": false,
+            "signature": true
+          },
+          {
+            "id": "entr-2",
+            "name": "Croquetas de Bogavante",
+            "description": "Croquetas cremosas con bogavante salvaje y reducción de brandy",
+            "price": 14.00,
+            "allergens": [
+              "gluten",
+              "crustáceos",
+              "lácteos"
+            ],
+            "vegetarian": false
+          },
+          {
+            "id": "entr-3",
+            "name": "Ensalada de Quinoa y Aguacate",
+            "description": "Quinoa ecológica con aguacate, mango, tomate cherry y vinagreta de cítricos",
+            "price": 12.00,
+            "allergens": [],
+            "vegetarian": true,
+            "vegan": true
+          }
+        ]
+      },
+      {
+        "name": "Arroces",
+        "items": [
+          {
+            "id": "rice-1",
+            "name": "Paella Valenciana Tradicional",
+            "description": "Arroz bomba con pollo de corral, conejo, garrofón, judía plana y romero. Cocido en leña de naranjo. Premio '10 Cucharas de Madera' 2022",
+            "price": 26.00,
+            "allergens": [],
+            "vegetarian": false,
+            "min_people": 2,
+            "preparation_time": 35,
+            "signature_dish": true,
+            "award_winning": true
+          },
+          {
+            "id": "rice-2",
+            "name": "Arroz a Banda",
+            "description": "Arroz caldoso con fumet de rape y gamba roja, servido con alioli y el pescado separado. Tradición marinera de Gandía",
+            "price": 28.50,
+            "allergens": [
+              "pescado",
+              "crustáceos"
+            ],
+            "vegetarian": false,
+            "min_people": 2,
+            "seafood_intensive": true
+          },
+          {
+            "id": "rice-3",
+            "name": "Arroz Negro con Chipirones",
+            "description": "Arroz con tinta de calamar, chipirones frescos y sofrito de ñora. Acompañado de alioli casero",
+            "price": 27.00,
+            "allergens": [
+              "moluscos",
+              "pescado"
+            ],
+            "vegetarian": false,
+            "min_people": 2,
+            "squid_ink": true
+          },
+          {
+            "id": "rice-4",
+            "name": "Paella de Verduras y Alcachofas",
+            "description": "Versión vegetariana con alcachofas de Benicarló, habas, garrofón y azafrán. Caldo de verduras ecológicas",
+            "price": 22.00,
+            "allergens": [],
+            "vegetarian": true,
+            "vegan_option": true
+          },
+          {
+            "id": "rice-5",
+            "name": "Arroz del Senyoret",
+            "description": "Lujo marinero: arroz con langostinos pelados, mejillones sin concha y calamar en dados. Para gourmets que no quieren trabajar",
+            "price": 34.00,
+            "allergens": [
+              "crustáceos",
+              "moluscos"
+            ],
+            "vegetarian": false,
+            "luxury": true
+          },
+          {
+            "id": "rice-6",
+            "name": "Arroz al Horno con Costra",
+            "description": "Plato de cazuela: arroz con garbanzos, morcilla, costilla de cerdo y huevo cubierto por costra crujiente. Receta abuela",
+            "price": 24.50,
+            "allergens": [
+              "huevo",
+              "lácteos"
+            ],
+            "vegetarian": false,
+            "hearty": true
+          }
+        ]
+      },
+      {
+        "name": "Pescados",
+        "items": [
+          {
+            "id": "fish-1",
+            "name": "Dorada a la Sal",
+            "description": "Dorada salvaje cocinada al estilo tradicional con hierbas provenzales",
+            "price": 28.00,
+            "allergens": [
+              "pescado"
+            ],
+            "vegetarian": false,
+            "catch_of_the_day": true
+          },
+          {
+            "id": "fish-2",
+            "name": "Arroz Caldoso de Mariscos",
+            "description": "Arroz bomba con bogavante, gambas rojas, almejas y mejillones",
+            "price": 32.50,
+            "allergens": [
+              "crustáceos",
+              "moluscos"
+            ],
+            "vegetarian": false,
+            "min_people": 2
+          }
+        ]
+      },
+      {
+        "name": "Carnes",
+        "items": [
+          {
+            "id": "meat-1",
+            "name": "Solomillo Ibérico",
+            "description": "Solomillo de cerdo ibérico con reducción de Pedro Ximénez y puré de patata trufado",
+            "price": 24.00,
+            "allergens": [
+              "lácteos"
+            ],
+            "vegetarian": false
+          }
+        ]
+      },
+      {
+        "name": "Postres",
+        "items": [
+          {
+            "id": "dess-1",
+            "name": "Soufflé de Chocolate",
+            "description": "Soufflé caliente de chocolate 70% con helado de vainilla de Madagascar",
+            "price": 9.50,
+            "allergens": [
+              "gluten",
+              "huevo",
+              "lácteos"
+            ],
+            "vegetarian": true
+          },
+          {
+            "id": "dess-2",
+            "name": "Crema Catalana",
+            "description": "Clásica crema catalana con azúcar quemado al momento",
+            "price": 7.00,
+            "allergens": [
+              "huevo",
+              "lácteos"
+            ],
+            "vegetarian": true
+          }
+        ]
+      }
+    ],
+    "wine_list": [
+      {
+        "name": "Albariño 'Pazo de Señorans'",
+        "type": "white",
+        "region": "Rías Baixas",
+        "price_per_glass": 5.50,
+        "price_per_bottle": 28.00
+      },
+      {
+        "name": "Rioja Reserva 'La Rioja Alta'",
+        "type": "red",
+        "region": "Rioja",
+        "price_per_bottle": 45.00
+      }
+    ]
+  },
+  "schedules": {
+    "weekdays": {
+      "monday_to_thursday": {
+        "lunch": "13:00 - 16:00",
+        "dinner": "20:00 - 23:30"
+      },
+      "friday": {
+        "lunch": "13:00 - 16:30",
+        "dinner": "20:00 - 00:00"
+      }
+    },
+    "weekend": {
+      "saturday": {
+        "lunch": "12:30 - 17:00",
+        "dinner": "20:00 - 00:30"
+      },
+      "sunday": {
+        "lunch": "12:30 - 16:00",
+        "dinner": "Cerrado"
+      }
+    },
+    "holidays": {
+      "christmas": {
+        "24_diciembre": "13:00 - 18:00",
+        "25_diciembre": "Cerrado"
+      }
+    }
+  },
+  "policies": [
+    {
+      "type": "reservations",
+      "policy": "Se requieren reservas para grupos mayores a 4 personas. Cancelación con 24h de antelación."
+    },
+    {
+      "type": "payments",
+      "policy": "Aceptamos todas las tarjetas principales y Bizum. No aceptamos cheques."
+    },
+    {
+      "type": "accessibility",
+      "policy": "Acceso para sillas de ruedas en planta baja y baños adaptados."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "¿Tienen menú vegetariano completo?",
+      "answer": "Sí, ofrecemos un menú vegetariano de 5 platos que cambia estacionalmente. Incluye entrada, principal y postre."
+    },
+    {
+      "question": "¿Pueden adaptar platos para alérgenos?",
+      "answer": "Podemos adaptar la mayoría de platos para evitar alérgenos comunes. Informe al hacer la reserva."
+    },
+    {
+      "question": "¿Tienen parking propio?",
+      "answer": "No, pero hay parking público a 100m (Plaza del Mar, tarifa reducida para clientes)."
+    },
+    {
+      "question": "¿Hacen eventos privados?",
+      "answer": "Sí, ofrecemos el local completo para eventos fuera de horario. Capacidad máxima: 80 personas."
+    },
+    {
+      "question": "¿Sirven comida para llevar?",
+      "answer": "Solo algunos platos (consultar en recepción). No hacemos delivery."
+    },
+    {
+      "question": "¿Tienen terraza exterior?",
+      "answer": "Sí, terraza con vistas al mar (30 plazas, solo para consumiciones)."
+    }
+  ],
+  "special_events": [
+    {
+      "name": "Noche de Maridaje",
+      "description": "Cena de 7 platos con vinos seleccionados por nuestro sumiller",
+      "date": "Primer viernes de cada mes",
+      "price": 85.00
+    },
+    {
+      "name": "Taller de Paella",
+      "description": "Master class con nuestro chef + comida",
+      "date": "Cada dos sábados",
+      "price": 60.00
+    }
+  ]
+}
