@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SemanticSearchModule } from './semantic-search/semantic-search.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from './config/config.module';
 import { EmbedingGeneratorModule } from './embeding-generator/embeding-generator.module';
 import { VectorDbModule } from './vector-db/vector-db.module';
 import { LLMGeneratorModule } from './llm-generator/llm-genrator.module';
@@ -8,7 +8,7 @@ import { RestaurantKnowledgeModule } from './restaurant-knowledge/restaurant-kno
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule,
     SemanticSearchModule,
     EmbedingGeneratorModule,
     VectorDbModule,

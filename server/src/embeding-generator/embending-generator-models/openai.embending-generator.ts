@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+
 import { EmbeddingGenerator } from '../interfaces/embeding-generator.interface';
+import { ConfigService } from '../../config/config.service';
 
 @Injectable()
 export class OpenAIEmbeddingGenerator implements EmbeddingGenerator {
   private readonly apiKey: string;
   private readonly model: string;
-  private readonly apiUrl = 'https://api.openai.com/v1/embeddings';
+  private readonly apiUrl: string;
 
   constructor(private configService: ConfigService) {
-    this.apiKey = this.configService.get<string>('OPENAI_API_KEY') as string;
+    this.apiKey = this.configService.ai.openaiApiKey;
     this.model =
-      this.configService.get<string>('OPENAI_EMBEDDING_MODEL') ||
-      'text-embedding-3-small';
+      this.configService.ai.embeddingModel || 'text-embedding-3-small';
+    this.apiUrl = this.configService.ai.openAiEmbeddingUrl;
   }
 
   async generateEmbedding(text: string): Promise<number[]> {

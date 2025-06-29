@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+
 import { EmbedingGeneratorService } from './embeding-generator.service';
 import { OpenAIEmbeddingGenerator } from './embending-generator-models/openai.embending-generator';
+import { ConfigModule } from '../config/config.module';
 
 @Module({
   imports: [ConfigModule],

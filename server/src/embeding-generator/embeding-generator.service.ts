@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '../config/config.service';
 import {
   EmbeddingGenerator,
   EmbeddingModelType,
@@ -14,11 +14,33 @@ export class EmbedingGeneratorService {
     private configService: ConfigService,
     private openAIGenerator: OpenAIEmbeddingGenerator,
   ) {
-    // Inicializar con el modelo por defecto
-    const defaultModel =
-      this.configService.get<string>('EMBEDDING_MODEL_TYPE') ||
-      EmbeddingModelType.OPENAI;
-    this.setGenerator(defaultModel as EmbeddingModelType);
+    const defaultModel = this.configService.ai.embeddingModel;
+    const modelType = this.mapModelToType(defaultModel as string);
+    this.setGenerator(modelType);
+  }
+
+  private mapModelToType(model: string): EmbeddingModelType {
+    // Modelos de OpenAI
+    if (model.includes('text-embedding')) {
+      return EmbeddingModelType.OPENAI;
+    }
+
+    // Modelos de Hugging Face
+    if (
+      model.includes('sentence-transformers') ||
+      model.includes('all-MiniLM')
+    ) {
+      return EmbeddingModelType.HUGGINGFACE;
+    }
+
+    // Modelos de Cohere
+    if (model.includes('embed-') || model.includes('cohere')) {
+      return EmbeddingModelType.COHERE;
+    }
+
+    // Por defecto, asume OpenAI
+    console.warn(`⚠️ Unrecognized model: ${model}, defaulting to OpenAI`);
+    return EmbeddingModelType.OPENAI;
   }
 
   setGenerator(modelType: EmbeddingModelType): void {
@@ -26,7 +48,7 @@ export class EmbedingGeneratorService {
       case EmbeddingModelType.OPENAI:
         this.currentGenerator = this.openAIGenerator;
         break;
-      // Aquí puedes agregar más casos para otros modelos
+   
       // case EmbeddingModelType.HUGGINGFACE:
       //   this.currentGenerator = this.huggingFaceGenerator;
       //   break;

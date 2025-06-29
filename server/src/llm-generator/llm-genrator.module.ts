@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+
 import { LLMGeneratorService } from './llm-genrator.service';
+import { ConfigModule } from '../config/config.module';
 
 @Module({
   imports: [ConfigModule],

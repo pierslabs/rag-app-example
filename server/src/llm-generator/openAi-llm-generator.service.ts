@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+
 import { LLMGenerator } from './interfaces/llm-generator.interface';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class OpenAILLMGenerator implements LLMGenerator {
@@ -9,24 +10,17 @@ export class OpenAILLMGenerator implements LLMGenerator {
   private readonly apiUrl = 'https://api.openai.com/v1/chat/completions';
 
   constructor(private configService: ConfigService) {
-    this.model =
-      this.configService.get<string>('OPENAI_LLM_MODEL') || 'gpt-3.5-turbo';
-    this.apiKey = this.configService.get<string>('OPENAI_API_KEY') as string;
+    this.model = this.configService.ai.chatModel || 'gpt-3.5-turbo';
+    this.apiKey = this.configService.ai.openaiApiKey;
   }
 
   async generateResponse(context: string, question: string): Promise<string> {
-    const systemPrompt = `Eres un asistente experto del restaurante. Tu trabajo es responder preguntas de los clientes usando la información proporcionada.
-    INSTRUCCIONES:
-    - Responde SOLO basándote en la información del contexto proporcionado
-    - Si la información no está en el contexto, di que no tienes esa información específica
-    - Responde de manera amigable y profesional
-    - Mantén las respuestas concisas pero informativas
-    - Si mencionas precios, horarios o detalles específicos, asegúrate de que estén en el contexto
-    CONTEXTO DEL RESTAURANTE:${context}`;
+    const systemPrompt = this.configService.ai.systemPrompt;
+    const completeSystemPrompt = `${systemPrompt} ${context}`;
+    const userPrompt = this.configService.ai.userPrompt;
 
-    const userPrompt = `Pregunta del cliente: ${question}
-
-    Por favor responde basándote únicamente en la información del contexto proporcionado.`;
+    const contextPrompt = this.configService.ai.contextPrompt;
+    const completeUserPrompt = `${contextPrompt} ${userPrompt}  ${question}`;
 
     try {
       const response = await fetch(this.apiUrl, {
@@ -38,8 +32,8 @@ export class OpenAILLMGenerator implements LLMGenerator {
         body: JSON.stringify({
           model: this.model,
           messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
+            { role: 'system', content: completeSystemPrompt },
+            { role: 'user', content: completeUserPrompt },
           ],
           temperature: 0.7,
           max_tokens: 200,
@@ -65,17 +59,13 @@ export class OpenAILLMGenerator implements LLMGenerator {
     context: string,
     question: string,
   ): AsyncGenerator<string, void, unknown> {
-    const systemPrompt = `Eres un asistente experto del restaurante. Tu trabajo es responder preguntas de los clientes usando la información proporcionada.
-    INSTRUCCIONES:
-    - Responde SOLO basándote en la información del contexto proporcionado
-    - Si la información no está en el contexto, di que no tienes esa información específica
-    - Responde de manera amigable y profesional
-    - Mantén las respuestas concisas pero informativas
-    CONTEXTO DEL RESTAURANTE:${context}`;
+    const systemPrompt = this.configService.ai.systemPrompt;
+    const completeSystemPrompt = `${systemPrompt} ${context}`;
 
-    const userPrompt = `Pregunta del cliente: ${question}
-    Por favor responde basándote únicamente en la información del contexto proporcionado.`;
+    const userPrompt = this.configService.ai.userPrompt;
 
+    const contextPrompt = this.configService.ai.contextPrompt;
+    const completeUserPrompt = `${contextPrompt} ${userPrompt}  ${question}`;
     try {
       const response = await fetch(this.apiUrl, {
         method: 'POST',
@@ -86,8 +76,8 @@ export class OpenAILLMGenerator implements LLMGenerator {
         body: JSON.stringify({
           model: this.model,
           messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
+            { role: 'system', content: completeSystemPrompt },
+            { role: 'user', content: completeUserPrompt },
           ],
           temperature: 0.7,
           max_tokens: 200,
