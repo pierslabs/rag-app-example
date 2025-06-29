@@ -4,9 +4,10 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+
 import { ChromaClient } from 'chromadb';
 import { DocumentBuilderService } from '../document-builder/document-builder.service';
+import { ConfigService } from '../config/config.service';
 
 export interface DocumentChunk {
   id: string;
@@ -21,13 +22,10 @@ export interface SearchResult {
   metadata?: Record<string, any>;
 }
 
-// Función de embedding personalizada que no hace nada
-// porque nosotros pasaremos los embeddings directamente
 class CustomEmbeddingFunction {
   async generate(texts: string[]): Promise<number[][]> {
-    // Esta función nunca se llamará porque pasaremos embeddings directamente
     throw new Error(
-      'Esta función no debería ser llamada - usamos embeddings propios',
+      'This function should not be called - we use our own embeddings',
     );
   }
 }
@@ -44,7 +42,7 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     try {
       const chromaUrl =
-        this.configService.get<string>('CHROMA_URL') || 'http://localhost:8000';
+        this.configService.database.chromaUrl || 'http://localhost:8000';
 
       const url = new URL(chromaUrl);
       const host = url.hostname;
@@ -55,20 +53,20 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
         port: port,
       });
 
-      this.logger.log(`Conectando a ChromaDB en: ${host}:${port}`);
+      this.logger.log(`Connect ChromaDB : ${host}:${port}`);
 
       await this.client.heartbeat();
-      this.logger.log('Conexión a ChromaDB establecida correctamente');
+      this.logger.log('Connection to ChromaDB established successfully');
 
       await this.ensureCollection();
     } catch (error) {
-      this.logger.error('Error conectando a ChromaDB:', error);
+      this.logger.error('ChromaDB connection error:', error);
       throw error;
     }
   }
 
   async onModuleDestroy() {
-    this.logger.log('Cerrando conexión con ChromaDB');
+    this.logger.log('Closing connection to ChromaDB');
   }
 
   private async ensureCollection() {
@@ -76,33 +74,33 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
       this.collection = await this.client.getCollection({
         name: this.collectionName,
       });
-      this.logger.log(`Colección '${this.collectionName}' encontrada`);
+      this.logger.log(`Collection '${this.collectionName}' found`);
     } catch (error) {
-      this.logger.log(`Creando nueva colección '${this.collectionName}'`);
+      this.logger.log(`Creating new collection '${this.collectionName}'`);
 
-      // Crear colección con función de embedding personalizada
+      // Create collection with custom embedding function
       this.collection = await this.client.createCollection({
         name: this.collectionName,
         metadata: {
-          description: 'Conocimiento del restaurante para búsqueda semántica',
+          description: 'Restaurant knowledge for semantic search',
           created_at: new Date().toISOString(),
         },
         embeddingFunction: new CustomEmbeddingFunction(),
       });
 
-      this.logger.log(`Colección '${this.collectionName}' creada exitosamente`);
+      this.logger.log(
+        `Collection '${this.collectionName}' created successfully`,
+      );
     }
   }
 
   async addDocuments(documents: DocumentChunk[], embeddings: number[][]) {
     try {
       if (documents.length !== embeddings.length) {
-        throw new Error(
-          'El número de documentos debe coincidir con el número de embeddings',
-        );
+        throw new Error('Number of documents must match number of embeddings');
       }
 
-      this.logger.log(`Agregando ${documents.length} documentos a ChromaDB...`);
+      this.logger.log(`Adding ${documents.length} documents to ChromaDB...`);
 
       const ids = documents.map((doc) => doc.id);
       const metadatas = documents.map((doc) => doc.metadata || {});
@@ -115,10 +113,10 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
         documents: texts,
       });
 
-      this.logger.log('Documentos agregados exitosamente a ChromaDB');
+      this.logger.log('Documents added successfully to ChromaDB');
       return true;
     } catch (error) {
-      this.logger.error('Error agregando documentos a ChromaDB:', error);
+      this.logger.error('Error adding documents to ChromaDB:', error);
       throw error;
     }
   }
@@ -137,11 +135,11 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
   ): Promise<SearchResult[]> {
     try {
       this.logger.log(
-        `Buscando ${nResults} documentos similares en ChromaDB...`,
+        `Searching for ${nResults} similar documents in ChromaDB...`,
       );
 
       if (filter) {
-        this.logger.log(`Aplicando filtro:`, filter);
+        this.logger.log(`Applying filter:`, filter);
       }
 
       const results = await this.collection.query({
@@ -164,52 +162,10 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
         }
       }
 
-      this.logger.log(
-        `Encontrados ${searchResults.length} resultados similares`,
-      );
+      this.logger.log(`Found ${searchResults.length} similar results`);
       return searchResults;
     } catch (error) {
-      this.logger.error('Error en búsqueda semántica:', error);
-      throw error;
-    }
-  }
-
-  async searchBySource(
-    queryEmbedding: number[],
-    source: string,
-    nResults: number = 5,
-  ): Promise<SearchResult[]> {
-    return this.searchSimilarWithFilter(queryEmbedding, nResults, { source });
-  }
-
-  async getDocumentsBySource(source: string): Promise<SearchResult[]> {
-    try {
-      this.logger.log(`Obteniendo documentos de fuente: ${source}`);
-
-      const results = await this.collection.get({
-        where: { source },
-        include: ['documents', 'metadatas'],
-      });
-
-      const documents: SearchResult[] = [];
-
-      if (results.ids) {
-        for (let i = 0; i < results.ids.length; i++) {
-          documents.push({
-            id: results.ids[i],
-            text: results.documents?.[i] || '',
-            distance: 0, // No hay distancia en get
-            metadata: results.metadatas?.[i] || {},
-          });
-        }
-      }
-
-      this.logger.log(
-        `Encontrados ${documents.length} documentos de ${source}`,
-      );
-      return documents;
-    } catch (error) {
-      this.logger.error(`Error obteniendo documentos de ${source}:`, error);
+      this.logger.error('Error in semantic search:', error);
       throw error;
     }
   }
@@ -217,10 +173,10 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
   async deleteCollection() {
     try {
       await this.client.deleteCollection({ name: this.collectionName });
-      this.logger.log(`Colección '${this.collectionName}' eliminada`);
+      this.logger.log(`Collection '${this.collectionName}' deleted`);
       return true;
     } catch (error) {
-      this.logger.error('Error eliminando colección:', error);
+      this.logger.error('Error deleting collection:', error);
       return false;
     }
   }
@@ -234,64 +190,20 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
         metadata: this.collection.metadata,
       };
     } catch (error) {
-      this.logger.error('Error obteniendo información de la colección:', error);
-      throw error;
-    }
-  }
-
-  async getCollectionStats(): Promise<any> {
-    try {
-      const count = await this.collection.count();
-
-      // Obtener una muestra de documentos para analizar fuentes
-      const sampleResults = await this.collection.get({
-        limit: 100,
-        include: ['metadatas'],
-      });
-
-      const sources = new Set<string>();
-      if (sampleResults.metadatas) {
-        sampleResults.metadatas.forEach((metadata: any) => {
-          if (metadata?.source) {
-            sources.add(metadata.source);
-          }
-        });
-      }
-
-      return {
-        name: this.collectionName,
-        totalDocuments: count,
-        availableSources: Array.from(sources),
-        metadata: this.collection.metadata,
-        lastUpdate: new Date().toISOString(),
-      };
-    } catch (error) {
-      this.logger.error(
-        'Error obteniendo estadísticas de la colección:',
-        error,
-      );
+      this.logger.error('Error getting collection information:', error);
       throw error;
     }
   }
 
   async resetCollection() {
     try {
-      this.logger.log('Reiniciando colección...');
+      this.logger.log('Resetting collection...');
       await this.deleteCollection();
       await this.ensureCollection();
-      this.logger.log('Colección reiniciada exitosamente');
+      this.logger.log('Collection reset successfully');
       return true;
     } catch (error) {
-      this.logger.error('Error reiniciando colección:', error);
-      return false;
-    }
-  }
-
-  async collectionExists(): Promise<boolean> {
-    try {
-      const collections = await this.client.listCollections();
-      return collections.some((col) => col.name === this.collectionName);
-    } catch (error) {
+      this.logger.error('Error resetting collection:', error);
       return false;
     }
   }
@@ -301,7 +213,7 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
       const cacheData = documentBuilder.getCacheDocument();
 
       if (cacheData && !cacheData.chromaStored) {
-        this.logger.log('Cargando datos del cache a ChromaDB...');
+        this.logger.log('Loading cache data to ChromaDB...');
 
         const documents: DocumentChunk[] = cacheData.data.map((item) => ({
           id: item.id || `restaurant_info_${item.index || 0}`,
@@ -317,32 +229,21 @@ export class VectorDbService implements OnModuleInit, OnModuleDestroy {
 
         await this.addDocuments(documents, embeddings);
 
-        // Actualizar cache para marcar que ya está en ChromaDB
+        // Update cache to mark as stored in ChromaDB
         cacheData.chromaStored = true;
         documentBuilder.createCacheDocument(cacheData);
 
-        this.logger.log('Datos cargados del cache a ChromaDB exitosamente');
+        this.logger.log('Cache data loaded to ChromaDB successfully');
       } else {
-        this.logger.log('Los datos ya están en ChromaDB o no hay cache válido');
+        this.logger.log('Data is already in ChromaDB or no valid cache');
       }
 
-      // Mostrar información de la colección
+      // Display collection information
       const collectionInfo = await this.getCollectionInfo();
-      this.logger.log('Información de ChromaDB:', collectionInfo);
+      this.logger.log('ChromaDB information:', collectionInfo);
     } catch (error) {
-      this.logger.error('Error cargando desde cache a ChromaDB:', error);
+      this.logger.error('Error loading from cache to ChromaDB:', error);
       throw error;
-    }
-  }
-
-  async syncCacheStatus(): Promise<boolean> {
-    try {
-      const exists = await this.collectionExists();
-      const info = await this.getCollectionInfo();
-      return exists && info.count > 0;
-    } catch (error) {
-      this.logger.error('Error sincronizando estado del cache:', error);
-      return false;
     }
   }
 }
